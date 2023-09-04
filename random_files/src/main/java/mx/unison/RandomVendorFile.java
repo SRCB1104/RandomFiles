@@ -2,6 +2,8 @@ package mx.unison;
 
 import java.io.IOException;
 import java.io.RandomAccessFile;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Scanner;
 import java.util.logging.Level;
@@ -146,9 +148,9 @@ public class RandomVendorFile {
                 break;
 
 
-                //modificado por jose buzani
+            //modificado por jose buzani
             case 2:
-                                System.out.println("Insertar código del vendedor a borrar:");
+                System.out.println("Insertar código del vendedor a borrar:");
                 int codigoBorrar = input.nextInt();
                 input.nextLine();
 
@@ -196,65 +198,65 @@ public class RandomVendorFile {
                 break;
             case 3:
                 // Opción 3: Modificar datos de un vendedor.
-    System.out.println("Ingrese el código del vendedor a modificar:");
-    int codigoModificar = input.nextInt();
-    input.nextLine();
+                System.out.println("Ingrese el código del vendedor a modificar:");
+                int codigoModificar = input.nextInt();
+                input.nextLine();
 
-    try {
-        RandomAccessFile modificar = new RandomAccessFile(dataPath, "rw");
-        long currentPosition = 0;
-        boolean found = false;
+                try {
+                    RandomAccessFile modificar = new RandomAccessFile(dataPath, "rw");
+                    long currentPosition = 0;
+                    boolean found = false;
 
-        while (modificar.getFilePointer() < modificar.length()) {
-            long currentPositionBeforeRead = modificar.getFilePointer();
-            int codigoConsulta = modificar.readInt();
-            byte[] nombreBytes = new byte[Vendor.MAX_NAME];
-            modificar.read(nombreBytes);
-            String nombreConsulta = new String(nombreBytes, "UTF-8").trim();
-            long fechaConsulta = modificar.readLong();
-            byte[] zonaBytes = new byte[Vendor.MAX_ZONE];
-            modificar.read(zonaBytes);
-            String zonaConsulta = new String(zonaBytes, "UTF-8").trim();
+                    while (modificar.getFilePointer() < modificar.length()) {
+                        long currentPositionBeforeRead = modificar.getFilePointer();
+                        int codigoConsulta = modificar.readInt();
+                        byte[] nombreBytes = new byte[Vendor.MAX_NAME];
+                        modificar.read(nombreBytes);
+                        String nombreConsulta = new String(nombreBytes, "UTF-8").trim();
+                        long fechaConsulta = modificar.readLong();
+                        byte[] zonaBytes = new byte[Vendor.MAX_ZONE];
+                        modificar.read(zonaBytes);
+                        String zonaConsulta = new String(zonaBytes, "UTF-8").trim();
 
-            if (codigoConsulta == codigoModificar) {
-                found = true;
-                System.out.println("Vendedor encontrado:");
-                System.out.println("Código: " + codigoConsulta);
-                System.out.println("Nombre: " + nombreConsulta);
-                System.out.println("Fecha de Nacimiento: " + new Date(fechaConsulta));
-                System.out.println("Zona: " + zonaConsulta);
-                
-              
-                System.out.println("Ingrese los nuevos datos del vendedor:");
-                System.out.print("Nuevo nombre: ");
-                String nuevoNombre = input.nextLine();
-                System.out.print("Nueva fecha de Nacimiento (DD/MM/AA o DD/MM/YYYY): ");
-                String nuevaFecha = input.nextLine();
-                System.out.print("Nueva zona: ");
-                String nuevaZona = input.nextLine();
+                        if (codigoConsulta == codigoModificar) {
+                            found = true;
+                            System.out.println("Vendedor encontrado:");
+                            System.out.println("Código: " + codigoConsulta);
+                            System.out.println("Nombre: " + nombreConsulta);
+                            System.out.println("Fecha de Nacimiento: " + new Date(fechaConsulta));
+                            System.out.println("Zona: " + zonaConsulta);
 
-            
-                modificar.seek(currentPositionBeforeRead + 4); 
-                modificar.write(nuevoNombre.getBytes("UTF-8"));
-                modificar.writeLong(new SimpleDateFormat("dd/MM/yyyy").parse(nuevaFecha).getTime());
-                modificar.write(nuevaZona.getBytes("UTF-8"));
-                System.out.println("Datos del vendedor actualizados correctamente.");
+                            
+                            System.out.println("Ingrese los nuevos datos del vendedor:");
+                            System.out.print("Nuevo nombre: ");
+                            String nuevoNombre = input.nextLine();
+                            System.out.print("Nueva fecha de Nacimiento (DD/MM/AA o DD/MM/YYYY): ");
+                            String nuevaFecha = input.nextLine();
+                            System.out.print("Nueva zona: ");
+                            String nuevaZona = input.nextLine();
+
+                            
+                            modificar.seek(currentPositionBeforeRead + 4); 
+                            modificar.write(nuevoNombre.getBytes("UTF-8"));
+                            modificar.writeLong(new SimpleDateFormat("dd/MM/yyyy").parse(nuevaFecha).getTime());
+                            modificar.write(nuevaZona.getBytes("UTF-8"));
+                            System.out.println("Datos del vendedor actualizados correctamente.");
+                            break;
+                        }
+
+                        currentPosition = modificar.getFilePointer();
+                    }
+
+                    if (!found) {
+                        System.out.println("No se encontró ningún vendedor con ese código.");
+                    }
+
+                    modificar.close();
+                } catch (IOException | ParseException ex) {
+                    ex.printStackTrace();
+                }
                 break;
-            }
 
-            currentPosition = modificar.getFilePointer();
-        }
-
-        if (!found) {
-            System.out.println("No se encontró ningún vendedor con ese código.");
-        }
-
-        modificar.close();
-    } catch (IOException | ParseException ex) {
-        ex.printStackTrace();
-    }
-    break;
-                break;
             case 4:
                 System.out.println("Insertar zona a consultar:");
                 String zonaConsultar = input.nextLine();
