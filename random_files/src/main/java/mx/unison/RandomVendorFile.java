@@ -144,7 +144,54 @@ public class RandomVendorFile {
 
                 long posicion = randomFile.write(nuevoVendedor);
                 break;
+
+
+                //modificado por jose buzani
             case 2:
+                                System.out.println("Insertar código del vendedor a borrar:");
+                int codigoBorrar = input.nextInt();
+                input.nextLine();
+
+                try {
+                    RandomAccessFile quitar = new RandomAccessFile(dataPath, "rw");
+                    long currentPosition = 0;
+                    boolean found = false;
+
+                    while (quitar.getFilePointer() < quitar.length()) {
+                        long currentPositionBeforeRead = quitar.getFilePointer();
+                        int codigoConsulta = quitar.readInt();
+                        byte[] nombreBytes = new byte[Vendor.MAX_NAME];
+                        quitar.read(nombreBytes);
+                        String nombreConsulta = new String(nombreBytes, "UTF-8").trim();
+                        long fechaConsulta = quitar.readLong();
+                        byte[] zonaBytes = new byte[Vendor.MAX_ZONE];
+                        quitar.read(zonaBytes);
+                        String zonaConsulta = new String(zonaBytes, "UTF-8").trim();
+
+                        if (codigoConsulta == codigoBorrar) {
+
+                            quitar.seek(currentPositionBeforeRead);
+                            quitar.writeInt(-1);
+                            quitar.write(new byte[Vendor.MAX_NAME]);
+                            quitar.writeLong(0L);
+                            quitar.write(new byte[Vendor.MAX_ZONE]);
+                            found = true;
+                            break;
+                        }
+
+                        currentPosition = quitar.getFilePointer();
+                    }
+
+                    if (found) {
+                        System.out.println("Vendedor eliminado exitosamente.");
+                    } else {
+                        System.out.println("No se encontró ningún vendedor con ese código.");
+                    }
+
+                    quitar.close();
+                } catch (IOException ex) {
+                    ex.printStackTrace();
+                }
 
                 break;
             case 3:
