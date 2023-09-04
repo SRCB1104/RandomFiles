@@ -195,6 +195,65 @@ public class RandomVendorFile {
 
                 break;
             case 3:
+                // Opción 3: Modificar datos de un vendedor.
+    System.out.println("Ingrese el código del vendedor a modificar:");
+    int codigoModificar = input.nextInt();
+    input.nextLine();
+
+    try {
+        RandomAccessFile modificar = new RandomAccessFile(dataPath, "rw");
+        long currentPosition = 0;
+        boolean found = false;
+
+        while (modificar.getFilePointer() < modificar.length()) {
+            long currentPositionBeforeRead = modificar.getFilePointer();
+            int codigoConsulta = modificar.readInt();
+            byte[] nombreBytes = new byte[Vendor.MAX_NAME];
+            modificar.read(nombreBytes);
+            String nombreConsulta = new String(nombreBytes, "UTF-8").trim();
+            long fechaConsulta = modificar.readLong();
+            byte[] zonaBytes = new byte[Vendor.MAX_ZONE];
+            modificar.read(zonaBytes);
+            String zonaConsulta = new String(zonaBytes, "UTF-8").trim();
+
+            if (codigoConsulta == codigoModificar) {
+                found = true;
+                System.out.println("Vendedor encontrado:");
+                System.out.println("Código: " + codigoConsulta);
+                System.out.println("Nombre: " + nombreConsulta);
+                System.out.println("Fecha de Nacimiento: " + new Date(fechaConsulta));
+                System.out.println("Zona: " + zonaConsulta);
+                
+                // Aquí puedes permitir al usuario modificar los datos del vendedor
+                System.out.println("Ingrese los nuevos datos del vendedor:");
+                System.out.print("Nuevo nombre: ");
+                String nuevoNombre = input.nextLine();
+                System.out.print("Nueva fecha de Nacimiento (DD/MM/AA o DD/MM/YYYY): ");
+                String nuevaFecha = input.nextLine();
+                System.out.print("Nueva zona: ");
+                String nuevaZona = input.nextLine();
+
+                // Actualizar los datos en el archivo
+                modificar.seek(currentPositionBeforeRead + 4); // Saltar el código
+                modificar.write(nuevoNombre.getBytes("UTF-8"));
+                modificar.writeLong(new SimpleDateFormat("dd/MM/yyyy").parse(nuevaFecha).getTime());
+                modificar.write(nuevaZona.getBytes("UTF-8"));
+                System.out.println("Datos del vendedor actualizados correctamente.");
+                break;
+            }
+
+            currentPosition = modificar.getFilePointer();
+        }
+
+        if (!found) {
+            System.out.println("No se encontró ningún vendedor con ese código.");
+        }
+
+        modificar.close();
+    } catch (IOException | ParseException ex) {
+        ex.printStackTrace();
+    }
+    break;
                 break;
             case 4:
                 System.out.println("Insertar zona a consultar:");
