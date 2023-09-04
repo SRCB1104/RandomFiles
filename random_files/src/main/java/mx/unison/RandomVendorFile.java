@@ -119,15 +119,15 @@ public class RandomVendorFile {
         RandomVendorFile randomFile = new RandomVendorFile(dataPath);
 
         Scanner input = new Scanner(System.in);
-
+//Modificado por saul cardenas
         System.out.println("\tMenu\n");
         System.out.println("Que opcion quiere hacer?:\n\n" +
                 "1.- Insertar vendedor\n" +
                 "2.- Borrar datos de un vendedor\n" +
                 "3.- Modificar datos de un vendedor(Excepto codigo de vendedor)\n" +
                 "4.- Consulta por zona");
-
         int opcion = input.nextInt();
+        input.nextLine();
         switch (opcion){
             case 1:
                 System.out.println("Insertar codigo");
@@ -145,34 +145,44 @@ public class RandomVendorFile {
                 long posicion = randomFile.write(nuevoVendedor);
                 break;
             case 2:
-                System.out.println("Insertar codigo de la persona a borrar: ");
-                int codigoBorrar = input.nextInt();
-                input.nextLine();
-                int pos = (codigoBorrar*Vendor.RECORD_LEN) - Vendor.RECORD_LEN;
-                codigoBorrar = pos;
+
                 break;
             case 3:
                 break;
             case 4:
+                System.out.println("Insertar zona a consultar:");
+                String zonaConsultar = input.nextLine();
+
+                try {
+                    RandomAccessFile out2 = new RandomAccessFile(dataPath, "r");
+
+                    while (out2.getFilePointer() < out2.length()) {
+                        int codigoConsulta = out2.readInt();
+                        byte[] nombreBytes = new byte[Vendor.MAX_NAME];
+                        out2.read(nombreBytes);
+                        String nombreConsulta = new String(nombreBytes, "UTF-8").trim();
+                        long fechaConsulta = out2.readLong();
+                        byte[] zonaBytes = new byte[Vendor.MAX_ZONE];
+                        out2.read(zonaBytes);
+                        String zonaConsulta = new String(zonaBytes, "UTF-8").trim();
+
+                        if (zonaConsulta.equalsIgnoreCase(zonaConsultar)) {
+                            Vendor vendedor = new Vendor(codigoConsulta, nombreConsulta, new Date(fechaConsulta), zonaConsulta);
+                            System.out.println(vendedor);
+                        }
+                    }
+
+                    out2.close();
+                } catch (IOException ex) {
+                    ex.printStackTrace();
+                }
                 break;
 
             default:
                 System.out.println("Opcion no valida");
         }
-       System.out.println("Numero de registro:");
 
-        int n = input.nextInt();
 
         input.close();
-
-        int pos = (n * Vendor.RECORD_LEN) - Vendor.RECORD_LEN;
-
-        long t1 = System.currentTimeMillis();
-        Vendor p = randomFile.read(pos);
-        long t2 = System.currentTimeMillis();
-        System.out.println(p);
-        System.out.println(t2 - t1);
-
     }
-
 }
