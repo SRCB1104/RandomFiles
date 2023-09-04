@@ -224,7 +224,7 @@ public class RandomVendorFile {
                 System.out.println("Fecha de Nacimiento: " + new Date(fechaConsulta));
                 System.out.println("Zona: " + zonaConsulta);
                 
-                // Aquí puedes permitir al usuario modificar los datos del vendedor
+              
                 System.out.println("Ingrese los nuevos datos del vendedor:");
                 System.out.print("Nuevo nombre: ");
                 String nuevoNombre = input.nextLine();
@@ -233,8 +233,8 @@ public class RandomVendorFile {
                 System.out.print("Nueva zona: ");
                 String nuevaZona = input.nextLine();
 
-                // Actualizar los datos en el archivo
-                modificar.seek(currentPositionBeforeRead + 4); // Saltar el código
+            
+                modificar.seek(currentPositionBeforeRead + 4); 
                 modificar.write(nuevoNombre.getBytes("UTF-8"));
                 modificar.writeLong(new SimpleDateFormat("dd/MM/yyyy").parse(nuevaFecha).getTime());
                 modificar.write(nuevaZona.getBytes("UTF-8"));
